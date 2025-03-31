@@ -1,0 +1,11 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NEXT_PUBLIC_API_URL = "https://emilist.netlify.app/api"
+  NODE_VERSION = "18"
+  GROQ_API_KEY = "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"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs" 
