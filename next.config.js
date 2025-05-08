@@ -4,7 +4,6 @@ const nextConfig = {
     domains: ["emilistapi.vercel.app", "res.cloudinary.com"],
     unoptimized: true,
   },
-  output: 'export',
   trailingSlash: true,
   swcMinify: true,
   webpack: (config) => {
