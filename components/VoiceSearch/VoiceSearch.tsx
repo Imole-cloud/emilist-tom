@@ -20,6 +20,9 @@ const VoiceSearch = ({ onSearch, placeholder = "Search..." }: VoiceSearchProps) 
   const handleCommand = (command: string, searchTerm: string) => {
     // Set the transcript and trigger search
     setTranscript(searchTerm);
+    
+    // Ensure the search is triggered immediately
+    console.log("Command received, triggering search with:", searchTerm);
     onSearch(searchTerm);
   };
   

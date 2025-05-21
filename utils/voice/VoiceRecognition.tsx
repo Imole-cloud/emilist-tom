@@ -16,6 +16,7 @@ const VoiceRecognition = ({
   setIsListening
 }: VoiceRecognitionProps) => {
   const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
+  const [finalTranscript, setFinalTranscript] = useState<string>('');
   
   // Initialize speech recognition
   useEffect(() => {
@@ -67,6 +68,7 @@ const VoiceRecognition = ({
     if (isListening) {
       try {
         recognition.start();
+        setFinalTranscript('');
       } catch (error) {
         console.error("Error starting speech recognition:", error);
       }
@@ -85,6 +87,18 @@ const VoiceRecognition = ({
     
     recognition.onend = () => {
       console.log("Voice recognition ended");
+      
+      // Process final transcript for commands if we have one
+      if (finalTranscript) {
+        const { isCommand, command, searchTerm } = parseCommand(finalTranscript);
+        if (isCommand && searchTerm) {
+          console.log("Command detected:", command, "Search term:", searchTerm);
+          onCommand(command, searchTerm);
+          setIsListening(false); // Stop listening after command is recognized
+          return;
+        }
+      }
+      
       // If still supposed to be listening, restart
       if (isListening) {
         try {
@@ -104,12 +118,21 @@ const VoiceRecognition = ({
       // Send transcript to parent component
       onTranscript(transcript);
       
-      // Check if it's a command
-      const { isCommand, command, searchTerm } = parseCommand(transcript);
-      
-      if (isCommand && searchTerm) {
-        onCommand(command, searchTerm);
-        setIsListening(false); // Stop listening after command is recognized
+      // Store the final transcript when speech recognition is complete
+      if (event.results[0].isFinal) {
+        setFinalTranscript(transcript);
+        
+        // Check if it's a command
+        const { isCommand, command, searchTerm } = parseCommand(transcript);
+        
+        if (isCommand && searchTerm) {
+          console.log("Command detected:", command, "Search term:", searchTerm);
+          // Ensure we call onCommand with a slight delay to allow the UI to update
+          setTimeout(() => {
+            onCommand(command, searchTerm);
+            setIsListening(false); // Stop listening after command is recognized
+          }, 100);
+        }
       }
     };
     
@@ -124,7 +147,7 @@ const VoiceRecognition = ({
       recognition.onresult = null;
       recognition.onerror = null;
     };
-  }, [isListening, recognition, onTranscript, onCommand, parseCommand, setIsListening]);
+  }, [isListening, recognition, onTranscript, onCommand, parseCommand, setIsListening, finalTranscript]);
   
   // No UI rendering needed for this component
   return null;
