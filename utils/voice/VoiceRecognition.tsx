@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from 'react';
+import { useSearch } from '../../utils/SearchProvider';
 
 interface VoiceRecognitionProps {
   onTranscript: (text: string) => void;
@@ -17,6 +18,7 @@ const VoiceRecognition = ({
 }: VoiceRecognitionProps) => {
   const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
   const [finalTranscript, setFinalTranscript] = useState<string>('');
+  const { handleVoiceSearch } = useSearch(); // Access the search context
   
   // Initialize speech recognition
   useEffect(() => {
@@ -92,8 +94,14 @@ const VoiceRecognition = ({
       if (finalTranscript) {
         const { isCommand, command, searchTerm } = parseCommand(finalTranscript);
         if (isCommand && searchTerm) {
-          console.log("Command detected:", command, "Search term:", searchTerm);
+          console.log("Command detected on end:", command, "Search term:", searchTerm);
+          
+          // Use the search context to trigger a search
+          handleVoiceSearch(searchTerm);
+          
+          // Also call the original onCommand for UI updates
           onCommand(command, searchTerm);
+          
           setIsListening(false); // Stop listening after command is recognized
           return;
         }
@@ -126,10 +134,15 @@ const VoiceRecognition = ({
         const { isCommand, command, searchTerm } = parseCommand(transcript);
         
         if (isCommand && searchTerm) {
-          console.log("Command detected:", command, "Search term:", searchTerm);
-          // Ensure we call onCommand with a slight delay to allow the UI to update
+          console.log("Command detected on result:", command, "Search term:", searchTerm);
+          
+          // Use the search context to trigger a search
           setTimeout(() => {
+            handleVoiceSearch(searchTerm);
+            
+            // Also call the original onCommand for UI updates
             onCommand(command, searchTerm);
+            
             setIsListening(false); // Stop listening after command is recognized
           }, 100);
         }
@@ -147,7 +160,7 @@ const VoiceRecognition = ({
       recognition.onresult = null;
       recognition.onerror = null;
     };
-  }, [isListening, recognition, onTranscript, onCommand, parseCommand, setIsListening, finalTranscript]);
+  }, [isListening, recognition, onTranscript, onCommand, parseCommand, setIsListening, finalTranscript, handleVoiceSearch]);
   
   // No UI rendering needed for this component
   return null;

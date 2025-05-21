@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import VoiceRecognition from '../../utils/voice/VoiceRecognition';
 import { FaMicrophone, FaMicrophoneSlash } from 'react-icons/fa';
+import { useSearch } from '../../utils/SearchProvider';
 
 interface VoiceSearchProps {
   onSearch: (searchTerm: string) => void;
@@ -12,6 +13,7 @@ interface VoiceSearchProps {
 const VoiceSearch = ({ onSearch, placeholder = "Search..." }: VoiceSearchProps) => {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
+  const { handleVoiceSearch } = useSearch(); // Access the search context
   
   const handleTranscript = (text: string) => {
     setTranscript(text);
@@ -21,8 +23,13 @@ const VoiceSearch = ({ onSearch, placeholder = "Search..." }: VoiceSearchProps) 
     // Set the transcript and trigger search
     setTranscript(searchTerm);
     
-    // Ensure the search is triggered immediately
+    // Ensure the search is triggered immediately through both mechanisms
     console.log("Command received, triggering search with:", searchTerm);
+    
+    // Use the search context to trigger a search (primary method)
+    handleVoiceSearch(searchTerm);
+    
+    // Also call the original onSearch for backward compatibility
     onSearch(searchTerm);
   };
   
