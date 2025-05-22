@@ -1,8 +1,7 @@
 "use client";
 
 import { ReactNode } from 'react';
-import { SearchProvider } from '../utils/SearchProvider';
-import ReactQueryProvider from './ReactQueryProvider';
+import { SearchProvider } from './SearchProvider';
 
 interface ProvidersWrapperProps {
   children: ReactNode;
@@ -10,11 +9,9 @@ interface ProvidersWrapperProps {
 
 const ProvidersWrapper = ({ children }: ProvidersWrapperProps) => {
   return (
-    <ReactQueryProvider>
-      <SearchProvider>
-        {children}
-      </SearchProvider>
-    </ReactQueryProvider>
+    <SearchProvider>
+      {children}
+    </SearchProvider>
   );
 };
 
