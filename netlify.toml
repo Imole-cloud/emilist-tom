@@ -1,4 +1,4 @@
-[[build]]
+[build]
   command = "npm run build"
   publish = ".next"
 
@@ -9,19 +9,12 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  force = false
-  conditions = {Role = ["admin"]}
-
-[functions]
-  directory = "netlify/functions"
-  node_bundler = "esbuild"
-
 # Ensure client-side routing works correctly
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
